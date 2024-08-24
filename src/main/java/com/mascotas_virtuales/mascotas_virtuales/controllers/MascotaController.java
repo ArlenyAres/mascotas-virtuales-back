@@ -44,7 +44,7 @@ public class MascotaController {
     @PostMapping("/personalizar")
     public ResponseEntity<MascotaVirtual> crearMascotaPersonalizada(@RequestBody MascotaPersonalizadaRequest request) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        MascotaVirtual nuevaMascota = mascotaService.crearMascotaPersonalizada(request.getMascotaId(), request.getNombre(), userDetails);
+        MascotaVirtual nuevaMascota = mascotaService.crearMascotaPersonalizada(request.getMascotaId(), request.getNombre(), request.getColor(), userDetails);
         return ResponseEntity.ok(nuevaMascota);
     }
 

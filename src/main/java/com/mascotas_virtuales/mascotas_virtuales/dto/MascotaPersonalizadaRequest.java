@@ -9,5 +9,6 @@ import lombok.Setter;
 public class MascotaPersonalizadaRequest {
     private Long mascotaId;
     private String nombre;
+    private String color;
 
 }

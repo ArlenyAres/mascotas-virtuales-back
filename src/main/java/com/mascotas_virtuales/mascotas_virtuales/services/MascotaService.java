@@ -34,7 +34,7 @@ public class MascotaService {
         }
     }
 
-    public MascotaVirtual crearMascotaPersonalizada(Long mascotaId, String nombre, UserDetails userDetails) {
+    public MascotaVirtual crearMascotaPersonalizada(Long mascotaId, String nombre,String color, UserDetails userDetails) {
 
         // Buscar el tipo de mascota predefinida seleccionada
         MascotaVirtual mascotaPredefinida = mascotaRepository.findById(mascotaId)
@@ -43,6 +43,7 @@ public class MascotaService {
 
         MascotaVirtual nuevaMascota = new MascotaVirtual();
         nuevaMascota.setNombre(nombre);
+        nuevaMascota.setColor(color);
         nuevaMascota.setTipo(mascotaPredefinida.getTipo());
         nuevaMascota.setNivelEnergia(mascotaPredefinida.getNivelEnergia());
         nuevaMascota.setNivelHambre(mascotaPredefinida.getNivelHambre());

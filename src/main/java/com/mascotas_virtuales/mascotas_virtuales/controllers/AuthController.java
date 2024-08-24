@@ -51,17 +51,6 @@ public class AuthController {
         // Devolver el token en la respuesta
         return ResponseEntity.ok(Map.of("token", token));
 
-
-//        String token = jwtTokenProvider.createToken(userDetails.getUsername(), userDetails.getAuthorities().stream()
-//                .map(authority -> authority.getAuthority())
-//                .findFirst()
-//                .orElse("USER"));
-//
-//        Map<String, String> response = new HashMap<>();
-//        response.put("username", userDetails.getUsername());
-//        response.put("token", token);
-//
-//        return ResponseEntity.ok(userDetails);
     }
 
     @Operation(summary = "Registrar un nuevo usuario", description = "Registra un nuevo usuario en el sistema.")
@@ -74,8 +63,5 @@ public class AuthController {
         usuarioService.registerUser(newUser);
         return ResponseEntity.ok("Usuario registrado correctamente");
     }
-//    @PostMapping("/register")
-//    public ResponseEntity<?> register(@RequestBody Usuario newUser) {
-//        return ResponseEntity.ok(usuarioService.registerUser(newUser));
-//    }
+
 }

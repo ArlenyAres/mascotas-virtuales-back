@@ -24,6 +24,7 @@ public class MascotaVirtual {
     @Enumerated(EnumType.STRING)
     private TipoMascota tipo;
 
+    private String color;
     private int nivelEnergia;
     private int nivelHambre;
     private int nivelFelicidad;
