@@ -1,37 +1,39 @@
 package com.mascotas_virtuales.mascotas_virtuales.config;
 
 import com.mascotas_virtuales.mascotas_virtuales.services.UsuarioService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
 
     private final SecretKey secretKey;
     private final UsuarioService usuarioService;
+    private final PasswordEncoder passwordEncoder;
+    private final long validityInMilliseconds;
 
-    @Value("${jwt.expiration}")
-    private long validityInMilliseconds;
-
-    public JwtTokenProvider(@Value("${jwt.secret}") String secret, UsuarioService usuarioService) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    public JwtTokenProvider(@Lazy UsuarioService usuarioService, @Lazy PasswordEncoder passwordEncoder, @Value("${jwt.validity}") long validityInMilliseconds) {
+        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Genera una clave segura de 256 bits
         this.usuarioService = usuarioService;
+        this.passwordEncoder = passwordEncoder;
+        this.validityInMilliseconds = validityInMilliseconds;
     }
 
     public String createToken(String username, String role) {
-        Claims claims = Jwts.claims().setSubject(username);
+        Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
 
         Date now = new Date();
@@ -39,32 +41,26 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .signWith(secretKey)
                 .compact();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
+            JwtParser parser = Jwts.parserBuilder().setSigningKey(secretKey).build();
+            parser.parseClaimsJws(token);
             return true;
-
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("Token JWT inválido o expirado");
+        } catch (JwtException e) {
+            throw new JwtException("Invalid or expired JWT token", e);
         }
     }
 
     public String getUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        JwtParser parser = Jwts.parserBuilder().setSigningKey(secretKey).build();
+        return parser.parseClaimsJws(token).getBody().getSubject();
     }
 
     public String resolveToken(HttpServletRequest req) {

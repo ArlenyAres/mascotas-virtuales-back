@@ -1,12 +1,13 @@
 package com.mascotas_virtuales.mascotas_virtuales.config;
 
-
+import com.mascotas_virtuales.mascotas_virtuales.services.UsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -24,27 +24,63 @@ public class SecurityConfig {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) throws Exception {
-        return http.getSharedObject(AuthenticationManager.class);
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())  // Desactiva la protección CSRF
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**").permitAll()  // Permite el acceso a las rutas de autenticación
-                        .requestMatchers("/mascotas/predefinidas").permitAll()  // Permite acceso público a las mascotas predefinidas
-                        .anyRequest().authenticated()  // Requiere autenticación para cualquier otra solicitud
+                .csrf(csrf -> csrf.disable()) // Disable CSRF protection
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .anyRequest().authenticated() // All other requests require authentication
                 )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+   }
 }
+//public class SecurityConfig {
+//
+//    private final UsuarioService usuarioService;
+//
+//    public SecurityConfig(UsuarioService usuarioService) {
+//        this.usuarioService = usuarioService;
+//    }
+//
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        return usuarioService;
+//    }
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+//
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable()) // Disable CSRF protection
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .anyRequest().authenticated()
+//                );
+//        return http.build();
+//    }
+
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+//        return authenticationConfiguration.getAuthenticationManager();
+//    }
+//}

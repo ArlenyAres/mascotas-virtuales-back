@@ -3,6 +3,7 @@ package com.mascotas_virtuales.mascotas_virtuales.services;
 import com.mascotas_virtuales.mascotas_virtuales.models.Usuario;
 import com.mascotas_virtuales.mascotas_virtuales.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,13 +17,10 @@ public class UsuarioService implements UserDetailsService {
 
 
     private final UsuarioRepository usuarioRepository;
-
-
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
-
+    public UsuarioService(UsuarioRepository usuarioRepository, @Lazy PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
     }

@@ -3,8 +3,8 @@ package com.mascotas_virtuales.mascotas_virtuales.config;
 import com.mascotas_virtuales.mascotas_virtuales.models.MascotaVirtual;
 import com.mascotas_virtuales.mascotas_virtuales.models.TipoMascota;
 import com.mascotas_virtuales.mascotas_virtuales.models.Usuario;
-import com.mascotas_virtuales.mascotas_virtuales.repositories.MascotaRepository;
 import com.mascotas_virtuales.mascotas_virtuales.repositories.UsuarioRepository;
+import com.mascotas_virtuales.mascotas_virtuales.repositories.MascotaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,6 @@ public class DataInitializer {
     private final MascotaRepository mascotaRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // Constructor para inyectar dependencias
     @Autowired
     public DataInitializer(UsuarioRepository usuarioRepository, MascotaRepository mascotaRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
