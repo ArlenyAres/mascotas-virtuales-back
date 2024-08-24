@@ -58,4 +58,32 @@ public class MascotaController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(mascotaService.getAllMascotas(userDetails));
     }
+
+    @Operation(summary = "Actualizar una mascota", description = "Actualiza los detalles de una mascota existente.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mascota actualizada correctamente",
+                    content = @Content(schema = @Schema(implementation = MascotaVirtual.class))),
+            @ApiResponse(responseCode = "404", description = "Mascota no encontrada"),
+            @ApiResponse(responseCode = "403", description = "No autorizado para actualizar la mascota")
+    })
+    @PutMapping("/{mascotaiId}")
+    public ResponseEntity<MascotaVirtual> updateMascota(@PathVariable Long mascotaId, @RequestBody MascotaVirtual mascotaActualizada) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MascotaVirtual updatedMascota = mascotaService.updateMascota(mascotaId, mascotaActualizada, userDetails);
+        return ResponseEntity.ok(updatedMascota);
+    }
+
+
+    @Operation(summary = "Eliminar una mascota", description = "Permite al propietario de la mascota o a un administrador eliminar una mascota.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mascota eliminada correctamente"),
+            @ApiResponse(responseCode = "403", description = "No tienes permisos para eliminar esta mascota")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarMascota(@PathVariable Long id) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        mascotaService.eliminarMascota(id, userDetails);
+        return ResponseEntity.ok("Mascota eliminada correctamente");
+    }
+
 }

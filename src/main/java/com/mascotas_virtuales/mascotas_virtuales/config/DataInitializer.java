@@ -30,7 +30,7 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner init() {
         return args -> {
-            // Crear Usuario Admin
+
             if (usuarioRepository.findByUsername("admin").isEmpty()) {
                 Usuario admin = new Usuario();
                 admin.setUsername("admin");
@@ -41,7 +41,7 @@ public class DataInitializer {
                 System.out.println("Usuario administrador creado con éxito.");
             }
 
-            // Crear Mascotas Predeterminadas
+
             if (mascotaRepository.count() == 0) {
                 MascotaVirtual dragon = new MascotaVirtual(null, "Dragón", TipoMascota.DRAGON, 100, 100, 100, null);
                 mascotaRepository.save(dragon);
@@ -52,7 +52,7 @@ public class DataInitializer {
                 MascotaVirtual extraterrestre = new MascotaVirtual(null, "Extraterrestre", TipoMascota.EXTRATERRESTRE,  100, 100, 100, null);
                 mascotaRepository.save(extraterrestre);
 
-                MascotaVirtual fantasma = new MascotaVirtual(null, "Perro", TipoMascota.FANTASMA,  100, 100, 100, null);
+                MascotaVirtual fantasma = new MascotaVirtual(null, "Fantasma", TipoMascota.FANTASMA,  100, 100, 100, null);
                 mascotaRepository.save(fantasma);
 
                 System.out.println("Mascotas predeterminadas creadas con éxito.");

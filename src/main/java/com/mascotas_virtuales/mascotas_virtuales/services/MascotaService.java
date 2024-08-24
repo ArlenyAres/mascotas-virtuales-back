@@ -40,26 +40,60 @@ public class MascotaService {
         MascotaVirtual mascotaPredefinida = mascotaRepository.findById(mascotaId)
                 .orElseThrow(() -> new RuntimeException("Mascota no encontrada"));
 
-        // Crear una nueva mascota basada en la predefinida, pero con los atributos personalizados
+
         MascotaVirtual nuevaMascota = new MascotaVirtual();
-        nuevaMascota.setNombre(nombre); // Nombre personalizado
+        nuevaMascota.setNombre(nombre);
         nuevaMascota.setTipo(mascotaPredefinida.getTipo());
         nuevaMascota.setNivelEnergia(mascotaPredefinida.getNivelEnergia());
         nuevaMascota.setNivelHambre(mascotaPredefinida.getNivelHambre());
         nuevaMascota.setNivelFelicidad(mascotaPredefinida.getNivelFelicidad());
 
-        // Asignar el propietario de la nueva mascota
+
         Usuario propietario = usuarioRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         nuevaMascota.setPropietario(propietario);
 
-        // Guardar la nueva mascota en la base de datos
+
         return mascotaRepository.save(nuevaMascota);
 
     }
 
     public List<MascotaVirtual> getMascotasPredefinidas() {
         return mascotaRepository.findAll();
+    }
+
+    public MascotaVirtual updateMascota(Long mascotaId, MascotaVirtual mascotaActualizada, UserDetails userDetails) {
+        MascotaVirtual mascotaExistente = mascotaRepository.findById(mascotaId)
+                .orElseThrow(() -> new RuntimeException("Mascota no encontrada"));
+
+        if(userDetails.getAuthorities().toString().contains("ROLE_ADMIN") || mascotaExistente.getPropietario().getUsername().equals(userDetails.getUsername())) {
+
+            mascotaExistente.setNombre(mascotaActualizada.getNombre());
+            mascotaExistente.setNivelEnergia(mascotaActualizada.getNivelEnergia());
+            mascotaExistente.setNivelHambre(mascotaActualizada.getNivelHambre());
+            mascotaExistente.setNivelFelicidad(mascotaActualizada.getNivelFelicidad());
+            return mascotaRepository.save(mascotaExistente);
+        } else {
+            throw new RuntimeException("No tienes permiso para actualizar esta mascota");
+        }
+
+    }
+
+    public void eliminarMascota(Long mascotaId, UserDetails userDetails) {
+        MascotaVirtual mascota = mascotaRepository.findById(mascotaId)
+                .orElseThrow(() -> new RuntimeException("Mascota no encontrada"));
+
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        boolean isOwner = mascota.getPropietario() != null &&
+                mascota.getPropietario().getUsername().equals(userDetails.getUsername());
+
+        if (isAdmin || isOwner) {
+            mascotaRepository.delete(mascota);
+        } else {
+            throw new RuntimeException("No tienes permisos para eliminar esta mascota");
+        }
     }
 
 }

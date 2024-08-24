@@ -25,4 +25,12 @@ public class OpenApiConfig {
                 .pathsToMatch("/mascotas/**")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi authApi() {
+        return GroupedOpenApi.builder()
+                .group("auth")
+                .pathsToMatch("/auth/**")
+                .build();
+    }
 }
