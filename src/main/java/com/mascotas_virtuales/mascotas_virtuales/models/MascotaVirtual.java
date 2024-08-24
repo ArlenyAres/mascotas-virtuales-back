@@ -1,7 +1,7 @@
 package com.mascotas_virtuales.mascotas_virtuales.models;
 
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -20,8 +20,10 @@ public class MascotaVirtual {
     private Long id;
 
     private String nombre;
-    private String tipo;
-    private String color;
+
+    @Enumerated(EnumType.STRING)
+    private TipoMascota tipo;
+
     private int nivelEnergia;
     private int nivelHambre;
     private int nivelFelicidad;

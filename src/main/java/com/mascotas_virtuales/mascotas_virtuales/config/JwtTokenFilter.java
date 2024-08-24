@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,7 +22,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull  HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         String token = jwtTokenProvider.resolveToken(request);
         try {
@@ -31,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
         } catch (JwtException e) {
             SecurityContextHolder.clearContext();
-            response.sendError(HttpStatus.BAD_REQUEST.value(), "Token JWT invalido o expirado: " + e.getMessage());
+            response.sendError(HttpStatus.BAD_REQUEST.value(), "Token JWT inválido o expirado: " + e.getMessage());
             return;
         }
         filterChain.doFilter(request, response);
