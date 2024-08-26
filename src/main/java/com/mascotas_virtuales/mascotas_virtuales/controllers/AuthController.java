@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -40,17 +42,20 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario loginUser) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword())
-        );
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword())
+            );
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        // Generar el token JWT
-        String token = jwtTokenProvider.createToken(userDetails.getUsername(), userDetails.getAuthorities().toString());
+            // Generar el token JWT
+            String token = jwtTokenProvider.createToken(userDetails.getUsername(), userDetails.getAuthorities().toString());
 
-        // Devolver el token en la respuesta
-        return ResponseEntity.ok(Map.of("token", token));
-
+            // Devolver el token en la respuesta
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Credenciales inválidas");
+        }
     }
 
     @Operation(summary = "Registrar un nuevo usuario", description = "Registra un nuevo usuario en el sistema.")
@@ -65,3 +70,4 @@ public class AuthController {
     }
 
 }
+
