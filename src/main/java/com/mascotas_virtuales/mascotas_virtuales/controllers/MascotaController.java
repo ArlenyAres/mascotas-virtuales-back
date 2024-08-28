@@ -48,7 +48,7 @@ public class MascotaController {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         System.out.println("Roles del usuario: " + userDetails.getAuthorities());
-        MascotaVirtual nuevaMascota = mascotaService.crearMascotaPersonalizada(request.getMascotaId(), request.getNombre(), request.getColor(), userDetails);
+        MascotaVirtual nuevaMascota = mascotaService.crearMascotaPersonalizada(request.getTipo(), request.getNombre(), request.getColor(), userDetails);
 
         return ResponseEntity.ok(nuevaMascota);
     }

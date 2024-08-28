@@ -2,6 +2,7 @@ package com.mascotas_virtuales.mascotas_virtuales.services;
 
 
 import com.mascotas_virtuales.mascotas_virtuales.models.MascotaVirtual;
+import com.mascotas_virtuales.mascotas_virtuales.models.TipoMascota;
 import com.mascotas_virtuales.mascotas_virtuales.models.Usuario;
 import com.mascotas_virtuales.mascotas_virtuales.repositories.MascotaRepository;
 import com.mascotas_virtuales.mascotas_virtuales.repositories.UsuarioRepository;
@@ -34,30 +35,28 @@ public class MascotaService {
         }
     }
 
-    public MascotaVirtual crearMascotaPersonalizada(Long mascotaId, String nombre,String color, UserDetails userDetails) {
+    public MascotaVirtual crearMascotaPersonalizada(TipoMascota tipo, String nombre, String color, UserDetails userDetails) {
 
-        // Buscar el tipo de mascota predefinida seleccionada
-        MascotaVirtual mascotaPredefinida = mascotaRepository.findById(mascotaId)
-                .orElseThrow(() -> new RuntimeException("Mascota no encontrada"));
-
-
+        // Crear una nueva mascota virtual basada en el tipo recibido
         MascotaVirtual nuevaMascota = new MascotaVirtual();
         nuevaMascota.setNombre(nombre);
         nuevaMascota.setColor(color);
-        nuevaMascota.setTipo(mascotaPredefinida.getTipo());
-        nuevaMascota.setNivelEnergia(mascotaPredefinida.getNivelEnergia());
-        nuevaMascota.setNivelHambre(mascotaPredefinida.getNivelHambre());
-        nuevaMascota.setNivelFelicidad(mascotaPredefinida.getNivelFelicidad());
+        nuevaMascota.setTipo(tipo);
 
+        // Configurar niveles iniciales para la nueva mascota
+        nuevaMascota.setNivelEnergia(100);  // Valor inicial para la energía
+        nuevaMascota.setNivelHambre(100);   // Valor inicial para el hambre
+        nuevaMascota.setNivelFelicidad(100); // Valor inicial para la felicidad
 
+        // Buscar el usuario propietario basado en el userDetails
         Usuario propietario = usuarioRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         nuevaMascota.setPropietario(propietario);
 
-
+        // Guardar y devolver la nueva mascota
         return mascotaRepository.save(nuevaMascota);
-
     }
+
 
     public List<MascotaVirtual> getMascotasPredefinidas() {
         return mascotaRepository.findAll();
