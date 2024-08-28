@@ -26,7 +26,7 @@ public class JwtTokenProvider {
     private final long validityInMilliseconds;
 
     public JwtTokenProvider(@Lazy UsuarioService usuarioService, @Lazy PasswordEncoder passwordEncoder, @Value("${jwt.validity}") long validityInMilliseconds) {
-        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Genera una clave segura de 256 bits
+        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
         this.validityInMilliseconds = validityInMilliseconds;
@@ -74,6 +74,10 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         String username = getUsername(token);
         UserDetails userDetails = usuarioService.loadUserByUsername(username);
+
+        System.out.println("Autenticando al usuario: " + username);
+        System.out.println("Roles del usuario: " + userDetails.getAuthorities());
+
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }

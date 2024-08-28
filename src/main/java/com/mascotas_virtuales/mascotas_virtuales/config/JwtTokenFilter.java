@@ -24,7 +24,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull  HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+
+       String path = request.getServletPath();
+
+       if (path.equals("/auth/login") || path.equals("/auth/register")) {
+
+           filterChain.doFilter(request, response);
+           return;
+       }
+
         String token = jwtTokenProvider.resolveToken(request);
+
         try {
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);

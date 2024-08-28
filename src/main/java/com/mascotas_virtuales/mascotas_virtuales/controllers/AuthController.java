@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+
 import java.util.Map;
 
 @RestController
@@ -54,6 +54,7 @@ public class AuthController {
             // Devolver el token en la respuesta
             return ResponseEntity.ok(Map.of("token", token));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Credenciales inválidas");
         }
     }

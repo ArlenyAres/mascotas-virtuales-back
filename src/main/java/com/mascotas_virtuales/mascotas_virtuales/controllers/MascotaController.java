@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -41,10 +42,14 @@ public class MascotaController {
                     content = @Content(schema = @Schema(implementation = MascotaVirtual.class))),
             @ApiResponse(responseCode = "400", description = "Datos de personalización inválidos")
     })
+
     @PostMapping("/personalizar")
     public ResponseEntity<MascotaVirtual> crearMascotaPersonalizada(@RequestBody MascotaPersonalizadaRequest request) {
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("Roles del usuario: " + userDetails.getAuthorities());
         MascotaVirtual nuevaMascota = mascotaService.crearMascotaPersonalizada(request.getMascotaId(), request.getNombre(), request.getColor(), userDetails);
+
         return ResponseEntity.ok(nuevaMascota);
     }
 
