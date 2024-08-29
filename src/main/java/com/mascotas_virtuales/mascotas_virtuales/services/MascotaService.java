@@ -65,6 +65,23 @@ public class MascotaService {
     }
 
 
+    public MascotaVirtual getMascotaById(Long mascotaId, UserDetails userDetails) {
+       MascotaVirtual mascota = mascotaRepository.findById(mascotaId)
+               .orElseThrow(() -> new EntityNotFoundException("Mascota no encontrada"));
+
+       boolean isAdmin = userDetails.getAuthorities().stream()
+               .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+         boolean isOwner = mascota.getPropietario().getUsername().equals(userDetails.getUsername());
+
+         if (isAdmin || isOwner) {
+             return mascota;
+         } else {
+             throw new AccessDeniedException("No tienes permisos para ver esta mascota");
+         }
+    }
+
+
     public MascotaVirtual updateMascota(Long mascotaId, MascotaVirtual mascotaActualizada, UserDetails userDetails) {
 
         MascotaVirtual mascotaExistente = mascotaRepository.findById(mascotaId)

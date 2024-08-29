@@ -70,6 +70,7 @@ public class MascotaController {
                     content = @Content(schema = @Schema(implementation = MascotaVirtual.class)))
     })
     @GetMapping
+    @PostAuthorize("returnObject.propietario.username == authentication.principal.username")
     public ResponseEntity<List<MascotaVirtual>> getAllMascotas() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(mascotaService.getAllMascotas(userDetails));
@@ -94,6 +95,21 @@ public class MascotaController {
         return ResponseEntity.ok(updatedMascota);
     }
 
+    @Operation(summary = "Obtener una mascota por ID", description = "Devuelve una mascota basada en su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mascota devuelta correctamente",
+                    content = @Content(schema = @Schema(implementation = MascotaVirtual.class))),
+            @ApiResponse(responseCode = "404", description = "Mascota no encontrada"),
+            @ApiResponse(responseCode = "403", description = "No autorizado para ver esta mascota")
+    })
+    @GetMapping("/{mascotaId}")
+    @PostAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<MascotaVirtual> getMascota(@PathVariable Long mascotaId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        MascotaVirtual mascota = mascotaService.getMascotaById(mascotaId, userDetails);
+        return ResponseEntity.ok(mascota);
+    }
 
 
     @Operation(summary = "Eliminar una mascota", description = "Permite al propietario de la mascota o a un administrador eliminar una mascota.")
