@@ -43,16 +43,16 @@ public class DataInitializer {
 
 
             if (mascotaRepository.count() == 0) {
-                MascotaVirtual dragon = new MascotaVirtual(null, "Dragón", TipoMascota.DRAGON, "Rojo", 100, 100, 100, null);
+                MascotaVirtual dragon = new MascotaVirtual(null, "DRAGOON", TipoMascota.DRAGOON, "Rojo", 100, 100, 100, null);
                 mascotaRepository.save(dragon);
 
-                MascotaVirtual unicornio = new MascotaVirtual(null, "Unicornio", TipoMascota.UNICORNIO, "Blanco", 100, 100, 100, null);
+                MascotaVirtual unicornio = new MascotaVirtual(null, "UNICORN", TipoMascota.UNICORN, "Blanco", 100, 100, 100, null);
                 mascotaRepository.save(unicornio);
 
-                MascotaVirtual extraterrestre = new MascotaVirtual(null, "Extraterrestre", TipoMascota.EXTRATERRESTRE, "Verde", 100, 100, 100, null);
+                MascotaVirtual extraterrestre = new MascotaVirtual(null, "ALIEN", TipoMascota.ALIEN, "Verde", 100, 100, 100, null);
                 mascotaRepository.save(extraterrestre);
 
-                MascotaVirtual fantasma = new MascotaVirtual(null, "Fantasma", TipoMascota.FANTASMA, "Transparente", 100, 100, 100, null);
+                MascotaVirtual fantasma = new MascotaVirtual(null, "GHOST", TipoMascota.GHOST, "Transparente", 100, 100, 100, null);
                 mascotaRepository.save(fantasma);
 
                 System.out.println("Mascotas predeterminadas creadas con éxito.");

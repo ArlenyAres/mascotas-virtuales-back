@@ -22,7 +22,7 @@ public class MascotaVirtual {
     private String nombre;
 
     @Enumerated(EnumType.STRING)
-    private TipoMascota tipo;
+    private TipoMascota tipoMascota;
 
     private String color;
     private int nivelEnergia;

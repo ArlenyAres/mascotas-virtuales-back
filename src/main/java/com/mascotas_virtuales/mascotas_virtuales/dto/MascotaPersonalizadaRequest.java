@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MascotaPersonalizadaRequest {
-    private TipoMascota tipo;
+    private TipoMascota tipoMascota;
     private String nombre;
     private String color;
 

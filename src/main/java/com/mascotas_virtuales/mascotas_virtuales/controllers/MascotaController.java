@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,11 +45,21 @@ public class MascotaController {
     })
 
     @PostMapping("/personalizar")
+    @PostAuthorize("returnObject.propietario.username == authentication.principal.username")
     public ResponseEntity<MascotaVirtual> crearMascotaPersonalizada(@RequestBody MascotaPersonalizadaRequest request) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         System.out.println("Roles del usuario: " + userDetails.getAuthorities());
-        MascotaVirtual nuevaMascota = mascotaService.crearMascotaPersonalizada(request.getTipo(), request.getNombre(), request.getColor(), userDetails);
+        System.out.println("Usuario autenticado: " + userDetails.getUsername());
+
+
+        MascotaVirtual nuevaMascota = mascotaService.crearMascotaPersonalizada(
+                request.getTipoMascota(),
+                request.getNombre(),
+                request.getColor(),
+                userDetails
+        );
 
         return ResponseEntity.ok(nuevaMascota);
     }
@@ -71,12 +82,18 @@ public class MascotaController {
             @ApiResponse(responseCode = "404", description = "Mascota no encontrada"),
             @ApiResponse(responseCode = "403", description = "No autorizado para actualizar la mascota")
     })
-    @PutMapping("/{mascotaiId}")
+    @PutMapping("/{mascotaId}")
     public ResponseEntity<MascotaVirtual> updateMascota(@PathVariable Long mascotaId, @RequestBody MascotaVirtual mascotaActualizada) {
+        // Obtener los detalles del usuario autenticado
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Actualizar la mascota utilizando el servicio
         MascotaVirtual updatedMascota = mascotaService.updateMascota(mascotaId, mascotaActualizada, userDetails);
+
+        // Retornar la respuesta con la mascota actualizada
         return ResponseEntity.ok(updatedMascota);
     }
+
 
 
     @Operation(summary = "Eliminar una mascota", description = "Permite al propietario de la mascota o a un administrador eliminar una mascota.")

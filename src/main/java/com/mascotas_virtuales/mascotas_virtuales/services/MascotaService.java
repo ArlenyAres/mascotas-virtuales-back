@@ -6,7 +6,9 @@ import com.mascotas_virtuales.mascotas_virtuales.models.TipoMascota;
 import com.mascotas_virtuales.mascotas_virtuales.models.Usuario;
 import com.mascotas_virtuales.mascotas_virtuales.repositories.MascotaRepository;
 import com.mascotas_virtuales.mascotas_virtuales.repositories.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -41,12 +43,12 @@ public class MascotaService {
         MascotaVirtual nuevaMascota = new MascotaVirtual();
         nuevaMascota.setNombre(nombre);
         nuevaMascota.setColor(color);
-        nuevaMascota.setTipo(tipo);
+        nuevaMascota.setTipoMascota(tipo);
+        nuevaMascota.getId();
 
-        // Configurar niveles iniciales para la nueva mascota
-        nuevaMascota.setNivelEnergia(100);  // Valor inicial para la energía
-        nuevaMascota.setNivelHambre(100);   // Valor inicial para el hambre
-        nuevaMascota.setNivelFelicidad(100); // Valor inicial para la felicidad
+        nuevaMascota.setNivelEnergia(100);
+        nuevaMascota.setNivelHambre(100);
+        nuevaMascota.setNivelFelicidad(100);
 
         // Buscar el usuario propietario basado en el userDetails
         Usuario propietario = usuarioRepository.findByUsername(userDetails.getUsername())
@@ -62,19 +64,25 @@ public class MascotaService {
         return mascotaRepository.findAll();
     }
 
-    public MascotaVirtual updateMascota(Long mascotaId, MascotaVirtual mascotaActualizada, UserDetails userDetails) {
-        MascotaVirtual mascotaExistente = mascotaRepository.findById(mascotaId)
-                .orElseThrow(() -> new RuntimeException("Mascota no encontrada"));
 
-        if(userDetails.getAuthorities().toString().contains("ROLE_ADMIN") || mascotaExistente.getPropietario().getUsername().equals(userDetails.getUsername())) {
+    public MascotaVirtual updateMascota(Long mascotaId, MascotaVirtual mascotaActualizada, UserDetails userDetails) {
+
+        MascotaVirtual mascotaExistente = mascotaRepository.findById(mascotaId)
+                .orElseThrow(() -> new EntityNotFoundException("Mascota no encontrada"));
+
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        if(isAdmin || mascotaExistente.getPropietario().getUsername().equals(userDetails.getUsername())) {
 
             mascotaExistente.setNombre(mascotaActualizada.getNombre());
             mascotaExistente.setNivelEnergia(mascotaActualizada.getNivelEnergia());
             mascotaExistente.setNivelHambre(mascotaActualizada.getNivelHambre());
             mascotaExistente.setNivelFelicidad(mascotaActualizada.getNivelFelicidad());
+
             return mascotaRepository.save(mascotaExistente);
         } else {
-            throw new RuntimeException("No tienes permiso para actualizar esta mascota");
+            throw new AccessDeniedException("No tienes permiso para actualizar esta mascota");
         }
 
     }
