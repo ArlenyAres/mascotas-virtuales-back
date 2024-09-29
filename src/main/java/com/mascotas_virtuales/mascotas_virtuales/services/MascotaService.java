@@ -39,23 +39,14 @@ public class MascotaService {
 
     public MascotaVirtual crearMascotaPersonalizada(TipoMascota tipo, String nombre, String color, UserDetails userDetails) {
 
-        // Crear una nueva mascota virtual basada en el tipo recibido
-        MascotaVirtual nuevaMascota = new MascotaVirtual();
-        nuevaMascota.setNombre(nombre);
-        nuevaMascota.setColor(color);
-        nuevaMascota.setTipoMascota(tipo);
-        nuevaMascota.getId();
+        MascotaVirtual nuevaMascota = new MascotaVirtual(nombre, tipo, color);
 
-        nuevaMascota.setNivelEnergia(100);
-        nuevaMascota.setNivelHambre(100);
-        nuevaMascota.setNivelFelicidad(100);
-
-        // Buscar el usuario propietario basado en el userDetails
+        // Buscar propietario basado en el userDetails
         Usuario propietario = usuarioRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         nuevaMascota.setPropietario(propietario);
 
-        // Guardar y devolver la nueva mascota
+
         return mascotaRepository.save(nuevaMascota);
     }
 

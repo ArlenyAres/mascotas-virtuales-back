@@ -85,13 +85,13 @@ public class MascotaController {
     })
     @PutMapping("/{mascotaId}")
     public ResponseEntity<MascotaVirtual> updateMascota(@PathVariable Long mascotaId, @RequestBody MascotaVirtual mascotaActualizada) {
-        // Obtener los detalles del usuario autenticado
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Actualizar la mascota utilizando el servicio
+
         MascotaVirtual updatedMascota = mascotaService.updateMascota(mascotaId, mascotaActualizada, userDetails);
 
-        // Retornar la respuesta con la mascota actualizada
+
         return ResponseEntity.ok(updatedMascota);
     }
 

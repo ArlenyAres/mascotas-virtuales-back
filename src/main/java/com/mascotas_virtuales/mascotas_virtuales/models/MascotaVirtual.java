@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Random;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -31,4 +33,21 @@ public class MascotaVirtual {
 
     @ManyToOne
     private Usuario propietario;
+
+
+    private static final Random random = new Random();
+
+    public MascotaVirtual(String nombre, TipoMascota tipoMascota, String color) {
+        this.nombre = nombre;
+        this.tipoMascota = tipoMascota;
+        this.color = color;
+        this.nivelEnergia = getRandomValue(50, 100);
+        this.nivelHambre = getRandomValue(50, 100);
+        this.nivelFelicidad = getRandomValue(50, 100);
+    }
+
+
+    private static int getRandomValue(int min, int max) {
+        return random.nextInt(max - min + 1) + min;
+    }
 }

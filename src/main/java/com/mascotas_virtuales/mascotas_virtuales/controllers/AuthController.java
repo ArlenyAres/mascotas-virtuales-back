@@ -48,10 +48,10 @@ public class AuthController {
             );
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            // Generar el token JWT
+
             String token = jwtTokenProvider.createToken(userDetails.getUsername(), userDetails.getAuthorities().toString());
 
-            // Devolver el token en la respuesta
+
             return ResponseEntity.ok(Map.of("token", token));
         } catch (Exception e) {
             e.printStackTrace();
